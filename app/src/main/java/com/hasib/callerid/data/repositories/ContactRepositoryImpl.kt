@@ -33,10 +33,17 @@ class ContactRepositoryImpl @Inject constructor(@ApplicationContext private val 
 
     private fun performQuery(contentResolver: ContentResolver): Result.Success<MutableList<Contact>> {
         val contacts = mutableListOf<Contact>()
+        val sortOrder = """
+        CASE 
+            WHEN ${ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME} GLOB '[A-Za-z]*' THEN 0
+            ELSE 1
+        END, ${ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME} ASC
+        """
+
         val cursor = contentResolver.query(
             ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
             null,
-            null, null, "${ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME} ASC"
+            null, null, sortOrder
         )
         Log.d("MainActivity", "Cursor: ${cursor?.count}")
         cursor?.use {
