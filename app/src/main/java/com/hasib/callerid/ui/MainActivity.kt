@@ -29,8 +29,11 @@ import com.hasib.callerid.data.model.doOnSuccess
 import com.hasib.callerid.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
+private const val REQUEST_ID = 1;
+
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var contactsAdapter: ContactsAdapter
@@ -76,63 +79,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun managePermissions() {
-
-        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arrayOf(
-                Manifest.permission.READ_CONTACTS,
-                Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.POST_NOTIFICATIONS
-            )
-        } else {
-            arrayOf(
-                Manifest.permission.READ_CONTACTS,
-                Manifest.permission.READ_PHONE_STATE,
-            )
-        }
-
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_CONTACTS
-            ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_PHONE_STATE
-            ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            contactViewModel.fetchContacts()
-        } else {
-            ActivityCompat.requestPermissions(
-                this, permissions, 100
-            )
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            requestRole()
-        } else {
-            val telecomManager = getSystemService(TELECOM_SERVICE) as TelecomManager
-            if (!telecomManager.defaultDialerPackage.equals(packageName)) {
-                val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER).apply {
-                    putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
-                }
-                startActivity(intent)
-            }
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 100 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            contactViewModel.fetchContacts()
-        }
-    }
-
     private fun setupSearch() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -153,13 +99,62 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerViewContacts.adapter = contactsAdapter
     }
 
-    private val REQUEST_ID = 1;
+    private fun managePermissions() {
+
+        val permissions = arrayOf(
+                Manifest.permission.READ_CONTACTS,
+                Manifest.permission.READ_PHONE_STATE,
+            )
+
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_CONTACTS
+            ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_PHONE_STATE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            contactViewModel.fetchContacts()
+        } else {
+            ActivityCompat.requestPermissions(
+                this, permissions, 100
+            )
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            requestCallScreeningRole()
+        } else {
+            requestDialRole()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 100 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            contactViewModel.fetchContacts()
+        }
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun requestRole() {
+    fun requestCallScreeningRole() {
         val roleManager = getSystemService(ROLE_SERVICE) as RoleManager;
-        val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER);
+        val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING);
         startActivityForResult(intent, REQUEST_ID);
+    }
+
+    fun requestDialRole() {
+        val telecomManager = getSystemService(TELECOM_SERVICE) as TelecomManager
+        if (!telecomManager.defaultDialerPackage.equals(packageName)) {
+            val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER).apply {
+                putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
+            }
+            startActivity(intent)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
