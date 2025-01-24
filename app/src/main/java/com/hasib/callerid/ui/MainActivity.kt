@@ -14,6 +14,7 @@ import android.view.WindowManager
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
@@ -67,6 +68,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         managePermissions()
+
+        intent.getStringExtra("message")?.let {
+           AlertDialog.Builder(this)
+               .setTitle("Incoming Call")
+               .setMessage(it)
+               .setPositiveButton("OK") { dialog, _ ->
+                   dialog.dismiss()
+               }
+               .show()
+        }
     }
 
     private fun handleResult(result: Result<List<Contact>>) {
@@ -100,7 +111,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun managePermissions() {
-
         val permissions = arrayOf(
                 Manifest.permission.READ_CONTACTS,
                 Manifest.permission.READ_PHONE_STATE,

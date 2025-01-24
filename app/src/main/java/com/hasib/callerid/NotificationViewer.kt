@@ -12,9 +12,9 @@ import androidx.core.app.NotificationCompat
 import com.hasib.callerid.ui.MainActivity
 
 object NotificationViewer {
-    fun createNotificationChannel(context: Context, title: String, message: String) {
+    fun showNotification(context: Context, title: String, message: String) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            showNotification(context, title, message)
+            showNotificationForOldVersion(context, title, message)
             return
         }
 
@@ -29,6 +29,7 @@ object NotificationViewer {
         val intent = Intent(Intent.ACTION_MAIN, null)
         intent.flags = Intent.FLAG_ACTIVITY_NO_USER_ACTION or Intent.FLAG_ACTIVITY_NEW_TASK
         intent.setClass(context, MainActivity::class.java)
+        intent.putExtra("message", message)
         val pendingIntent = PendingIntent.getActivity(
             context,
             1,
@@ -51,7 +52,7 @@ object NotificationViewer {
         notificationManager.notify(1, builder.build());
     }
 
-    private fun showNotification(context: Context, title: String, message: String) {
+    private fun showNotificationForOldVersion(context: Context, title: String, message: String) {
         val notificationManager =
             context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 

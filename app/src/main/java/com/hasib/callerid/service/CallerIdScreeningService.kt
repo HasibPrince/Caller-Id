@@ -4,15 +4,25 @@ import android.os.Build
 import android.telecom.Call
 import android.telecom.CallScreeningService
 import android.telephony.PhoneStateListener
-import android.telephony.TelephonyCallback
 import android.telephony.TelephonyManager
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.hasib.callerid.NotificationViewer
+import com.hasib.callerid.data.repositories.SpecialContactsRepository
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class CallerIdScreeningService : CallScreeningService() {
 
+    private val coroutineScope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
     private lateinit var telephonyManager: TelephonyManager
+
+    @Inject
+    lateinit var specialContactsRepository: SpecialContactsRepository
 
     override fun onCreate() {
         super.onCreate()
@@ -33,8 +43,6 @@ class CallerIdScreeningService : CallScreeningService() {
         }else {
             checkCallStatus(callDetails)
         }
-
-        NotificationViewer.createNotificationChannel(this, "Incoming Call", "Incoming call from: $phoneNumber")
     }
 
     private fun checkCallStatus(callDetails: Call.Details) {
@@ -50,10 +58,25 @@ class CallerIdScreeningService : CallScreeningService() {
     }
 
     private fun responseCall(callDetails: Call.Details) {
-        val response = CallResponse.Builder()
-            .setDisallowCall(true)
-            .build()
-        respondToCall(callDetails, response)
+        coroutineScope.launch {
+            val phoneNumber = callDetails.handle.schemeSpecificPart
+            val specialContact = specialContactsRepository.fetchSpecialContactByPhoneNumber(phoneNumber)
+            if (specialContact != null) {
+                val response = CallResponse.Builder()
+                    .setDisallowCall(true)
+                    .build()
+                respondToCall(callDetails, response)
+                val message = "Name: ${specialContact.name} Phone Number: $phoneNumber"
+                NotificationViewer.showNotification(this@CallerIdScreeningService, "Incoming Call", message)
+            } else {
+                val response = CallResponse.Builder()
+                    .setDisallowCall(false)
+                    .build()
+                respondToCall(callDetails, response)
+            }
+
+        }
+
     }
 }
 
