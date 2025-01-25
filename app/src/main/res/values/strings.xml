@@ -5,4 +5,6 @@
     <string name="title_incoming_call">Incoming Call</string>
     <string name="unblock">Unblock</string>
     <string name="ok">OK</string>
+    <string name="unknownError">Unknown Error!</string>
+    <string name="error">Error!</string>
 </resources>

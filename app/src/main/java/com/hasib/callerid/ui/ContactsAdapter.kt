@@ -7,6 +7,7 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.hasib.callerid.R
 import com.hasib.callerid.databinding.ItemContactBinding
 import com.hasib.callerid.domian.model.Contact
@@ -22,8 +23,7 @@ class ContactsAdapter(
     class ContactViewHolder(binding: ItemContactBinding) : RecyclerView.ViewHolder(binding.root) {
         val nameTextView: TextView = binding.contactName
         val phoneTextView: TextView = binding.contactPhone
-        val blockButton: View = binding.blockButton
-        val blockText: TextView = binding.blockText
+        val blockButton: MaterialButton = binding.blockButton
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
@@ -36,7 +36,7 @@ class ContactsAdapter(
         val contact = filteredContacts[position]
         holder.nameTextView.text = contact.name
         holder.phoneTextView.text = contact.phoneNumber
-        holder.blockText.text =
+        holder.blockButton.text =
             if (contact.isBlocked) context.getString(R.string.unblock) else context.getString(R.string.block)
         holder.blockButton.setOnClickListener {
             listener.onBlockClicked(contact)

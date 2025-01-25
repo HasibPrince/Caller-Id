@@ -22,10 +22,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hasib.callerid.R
 import com.hasib.callerid.databinding.ActivityMainBinding
 import com.hasib.callerid.domian.model.Contact
 import com.hasib.callerid.domian.model.Result
+import com.hasib.callerid.domian.model.doOnError
 import com.hasib.callerid.domian.model.doOnLoading
 import com.hasib.callerid.domian.model.doOnSuccess
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,15 +62,17 @@ class MainActivity : AppCompatActivity(), ContactsAdapter.ContactBlockListener {
         managePermissions()
 
         intent.getStringExtra(KEY_MESSAGE)?.let {
-            AlertDialog.Builder(this)
-                .setTitle(getString(R.string.title_incoming_call))
-                .setMessage(it)
-                .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
+            showDialog(getString(R.string.title_incoming_call), it)
         }
     }
+
+    private fun showDialog(title: String, message: String): AlertDialog? = MaterialAlertDialogBuilder(this)
+        .setTitle(title)
+        .setMessage(message)
+        .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
+            dialog.dismiss()
+        }
+        .show()
 
     private fun initActivityUI() {
         enableEdgeToEdge()
@@ -95,6 +99,11 @@ class MainActivity : AppCompatActivity(), ContactsAdapter.ContactBlockListener {
         lifecycleScope.launch {
             result.doOnSuccess {
                 loadContactsAndDisplay(it)
+            }
+
+            result.doOnError {
+                binding.progressBar.visibility = View.GONE
+                showDialog(getString(R.string.error), it.message ?: getString(R.string.unknownError))
             }
         }
     }
