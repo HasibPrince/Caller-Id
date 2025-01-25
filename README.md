@@ -31,6 +31,7 @@ App Download link: https://drive.google.com/file/d/11bfLbO2rsEFkKBIN0XeqHsr6M4Qb
 - **Architecture:** MVVM + Clean Architecture
 - **Dependency Injection:** Hilt
 - **Call Managing Api:** CallScreeningService
+- **Phone Number Utitly:** libphonenumber
 - **Database:** Room
 - **Asynchronous Tasks:** Kotlin Coroutines
 
