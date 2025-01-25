@@ -1,7 +1,6 @@
 package com.hasib.callerid.ui
 
 import android.Manifest
-import android.app.Activity
 import android.app.role.RoleManager
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -24,13 +23,14 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hasib.callerid.R
-import com.hasib.callerid.data.model.Contact
-import com.hasib.callerid.data.model.Result
-import com.hasib.callerid.data.model.doOnLoading
-import com.hasib.callerid.data.model.doOnSuccess
 import com.hasib.callerid.databinding.ActivityMainBinding
+import com.hasib.callerid.domian.model.Contact
+import com.hasib.callerid.domian.model.Result
+import com.hasib.callerid.domian.model.doOnLoading
+import com.hasib.callerid.domian.model.doOnSuccess
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 private const val REQUEST_ID = 1;
 
@@ -45,21 +45,7 @@ class MainActivity : AppCompatActivity(), ContactsAdapter.ContactBlockListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        ActivityMainBinding.inflate(layoutInflater).apply {
-            binding = this
-            setContentView(root)
-        }
-        window.addFlags(
-            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-        )
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        initActivityUI()
 
         binding.recyclerViewContacts.layoutManager = LinearLayoutManager(this)
 
@@ -76,13 +62,31 @@ class MainActivity : AppCompatActivity(), ContactsAdapter.ContactBlockListener {
         managePermissions()
 
         intent.getStringExtra("message")?.let {
-           AlertDialog.Builder(this)
-               .setTitle("Incoming Call")
-               .setMessage(it)
-               .setPositiveButton("OK") { dialog, _ ->
-                   dialog.dismiss()
-               }
-               .show()
+            AlertDialog.Builder(this)
+                .setTitle("Incoming Call")
+                .setMessage(it)
+                .setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
+    }
+
+    private fun initActivityUI() {
+        enableEdgeToEdge()
+        ActivityMainBinding.inflate(layoutInflater).apply {
+            binding = this
+            setContentView(root)
+        }
+        window.addFlags(
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+        )
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
         }
     }
 
@@ -119,18 +123,11 @@ class MainActivity : AppCompatActivity(), ContactsAdapter.ContactBlockListener {
 
     private fun managePermissions() {
         val permissions = arrayOf(
-                Manifest.permission.READ_CONTACTS,
-                Manifest.permission.READ_PHONE_STATE,
-            )
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.READ_PHONE_STATE,
+        )
 
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_CONTACTS
-            ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_PHONE_STATE
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
+        if (isPermissionsGranted()) {
             contactViewModel.fetchContacts()
         } else {
             ActivityCompat.requestPermissions(
@@ -144,6 +141,14 @@ class MainActivity : AppCompatActivity(), ContactsAdapter.ContactBlockListener {
             requestDialRole()
         }
     }
+
+    private fun isPermissionsGranted(): Boolean = ContextCompat.checkSelfPermission(
+        this,
+        Manifest.permission.READ_CONTACTS
+    ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+        this,
+        Manifest.permission.READ_PHONE_STATE
+    ) == PackageManager.PERMISSION_GRANTED
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -177,10 +182,10 @@ class MainActivity : AppCompatActivity(), ContactsAdapter.ContactBlockListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_ID) {
-            if (resultCode == Activity.RESULT_OK) {
-                Log.d("TAG", "onActivityResult: User accepted the request.");
+            if (resultCode == RESULT_OK) {
+                Timber.d("onActivityResult: User accepted the request.");
             } else {
-                Log.d("TAG", "onActivityResult: User denied the request.");
+                Timber.d("onActivityResult: User denied the request.");
             }
         }
     }

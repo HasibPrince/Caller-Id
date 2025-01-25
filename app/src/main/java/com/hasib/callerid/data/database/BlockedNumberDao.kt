@@ -12,6 +12,9 @@ interface BlockedNumberDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(blockedNumber: BlockedNumber)
 
+    @Query("SELECT * FROM BlockedNumber")
+    suspend fun getAllBlockedNumbers(): List<BlockedNumber>
+
     @Query("SELECT EXISTS (SELECT 1 FROM BlockedNumber WHERE phoneNumber = :phoneNumber)")
     suspend fun exists(phoneNumber: String): Boolean
 

@@ -1,7 +1,4 @@
-package com.hasib.callerid.data.model
-
-import com.hasib.callerid.data.model.Result.Success
-import kotlin.collections.forEach
+package com.hasib.callerid.domian.model
 
 sealed class Result<out T> {
     object Loading : Result<Nothing>()
@@ -16,7 +13,7 @@ fun <T> Result<T>.doOnLoading(block: () -> Unit) {
 }
 
 suspend fun <T> Result<T>.doOnSuccess(block: suspend (T) -> Unit) {
-    if (this is Success) {
+    if (this is Result.Success) {
         block(data)
     }
 }

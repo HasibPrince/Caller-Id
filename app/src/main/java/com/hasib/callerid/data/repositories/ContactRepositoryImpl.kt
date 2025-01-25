@@ -3,14 +3,15 @@ package com.hasib.callerid.data.repositories
 import android.content.ContentResolver
 import android.content.Context
 import android.provider.ContactsContract
-import android.util.Log
-import com.hasib.callerid.data.model.Contact
-import com.hasib.callerid.data.model.Result
-import com.hasib.callerid.data.model.doOnSuccess
+import com.hasib.callerid.domian.handleDataFetch
+import com.hasib.callerid.domian.model.Contact
+import com.hasib.callerid.domian.model.Result
+import com.hasib.callerid.domian.model.doOnSuccess
+import com.hasib.callerid.domian.repositories.ContactRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,14 +19,14 @@ import javax.inject.Singleton
 class ContactRepositoryImpl @Inject constructor(@ApplicationContext private val context: Context) :
     ContactRepository {
 
-        private val contactList = mutableListOf<Contact>()
+    private val contactList = mutableListOf<Contact>()
 
-    override suspend fun fetchContacts(): Result<List<Contact>> {
-         getContacts(context.contentResolver).doOnSuccess {
-             contactList.clear()
-             contactList.addAll(it)
-         }
-        return Result.Success(contactList)
+    override suspend fun fetchContacts(): List<Contact> {
+        getContacts(context.contentResolver).doOnSuccess {
+            contactList.clear()
+            contactList.addAll(it)
+        }
+        return contactList
     }
 
     override fun toggleBlockedNumber(phoneNumber: String) {
@@ -36,15 +37,13 @@ class ContactRepositoryImpl @Inject constructor(@ApplicationContext private val 
 
     private suspend fun getContacts(contentResolver: ContentResolver): Result<List<Contact>> {
         return withContext(Dispatchers.IO) {
-            try {
+            handleDataFetch {
                 performQuery(contentResolver)
-            } catch (e: Exception) {
-                Result.Error(e)
             }
         }
     }
 
-    private fun performQuery(contentResolver: ContentResolver): Result.Success<MutableList<Contact>> {
+    private fun performQuery(contentResolver: ContentResolver): List<Contact> {
         val contacts = mutableListOf<Contact>()
         val sortOrder = """
         CASE 
@@ -58,7 +57,7 @@ class ContactRepositoryImpl @Inject constructor(@ApplicationContext private val 
             null,
             null, null, sortOrder
         )
-        Log.d("MainActivity", "Cursor: ${cursor?.count}")
+        Timber.d("Cursor: ${cursor?.count}")
         cursor?.use {
             val nameIndex =
                 it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
@@ -72,7 +71,7 @@ class ContactRepositoryImpl @Inject constructor(@ApplicationContext private val 
             }
         }
 
-        Log.d("MainActivity", "Contacts: ${contacts.size}")
-        return Result.Success(contacts)
+        Timber.d("Contacts: ${contacts.size}")
+        return contacts
     }
 }

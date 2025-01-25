@@ -5,7 +5,6 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.hasib.callerid.data.model.BlockedNumber
-import com.hasib.callerid.data.model.Contact
 
 @Database(entities = [BlockedNumber::class], version = 1)
 abstract class CallerIdDatabase : RoomDatabase() {

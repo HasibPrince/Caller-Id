@@ -4,11 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hasib.callerid.data.model.Contact
-import com.hasib.callerid.data.model.Result
-import com.hasib.callerid.data.model.doOnSuccess
-import com.hasib.callerid.data.repositories.BlockedNumberRepository
+import com.hasib.callerid.domian.model.Contact
+import com.hasib.callerid.domian.model.Result
 import com.hasib.callerid.domian.usecases.FetchContactsUseCase
+import com.hasib.callerid.domian.usecases.ToggleBlockNumberUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ContactViewModel @Inject constructor(
     private val fetchContactsUseCase: FetchContactsUseCase,
-    private val blockedNumberRepository: BlockedNumberRepository
+    private val toggleBlockNumberUseCase: ToggleBlockNumberUseCase
 ) : ViewModel() {
     private val _contactsLiveData = MutableLiveData<Result<List<Contact>>>()
     val contactsLiveData: LiveData<Result<List<Contact>>> = _contactsLiveData
@@ -34,7 +33,7 @@ class ContactViewModel @Inject constructor(
 
     fun blockNumber(contact: Contact) {
         viewModelScope.launch {
-            blockedNumberRepository.toggleBlockedNumber(contact.phoneNumber)
+            toggleBlockNumberUseCase.invoke(contact.phoneNumber)
             _blockContactsLiveData.value = contact
         }
     }

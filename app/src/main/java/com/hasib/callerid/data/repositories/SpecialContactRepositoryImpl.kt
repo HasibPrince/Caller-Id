@@ -1,6 +1,7 @@
 package com.hasib.callerid.data.repositories
 
-import com.hasib.callerid.data.model.Contact
+import com.hasib.callerid.domian.model.Contact
+import com.hasib.callerid.domian.repositories.SpecialContactsRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 

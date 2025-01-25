@@ -1,6 +1,5 @@
 package com.hasib.callerid.ui
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,8 +7,9 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.hasib.callerid.data.model.Contact
+import com.hasib.callerid.R
 import com.hasib.callerid.databinding.ItemContactBinding
+import com.hasib.callerid.domian.model.Contact
 
 class ContactsAdapter(
     private val contacts: List<Contact>,
@@ -32,10 +32,12 @@ class ContactsAdapter(
     }
 
     override fun onBindViewHolder(holder: ContactViewHolder, position: Int) {
+        val context = holder.itemView.context
         val contact = filteredContacts[position]
         holder.nameTextView.text = contact.name
         holder.phoneTextView.text = contact.phoneNumber
-        holder.blockText.text = if (contact.isBlocked) "Unblock" else "Block"
+        holder.blockText.text =
+            if (contact.isBlocked) context.getString(R.string.unblock) else context.getString(R.string.block)
         holder.blockButton.setOnClickListener {
             listener.onBlockClicked(contact)
         }
@@ -44,7 +46,6 @@ class ContactsAdapter(
     fun notifyItem(contact: Contact) {
         filteredContacts.filter { it.phoneNumber == contact.phoneNumber }.forEach {
             val index = filteredContacts.indexOf(it)
-            Log.d("TAG", "Index: $index Item changed: $it")
             if (index != -1) {
                 notifyItemChanged(index)
             }

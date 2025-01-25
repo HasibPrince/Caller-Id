@@ -1,10 +1,10 @@
 package com.hasib.callerid.domian.usecases
 
-import com.hasib.callerid.data.model.Contact
-import com.hasib.callerid.data.model.Result
-import com.hasib.callerid.data.model.doOnSuccess
-import com.hasib.callerid.data.repositories.BlockedNumberRepository
-import com.hasib.callerid.data.repositories.ContactRepository
+import com.hasib.callerid.domian.handleDataFetch
+import com.hasib.callerid.domian.model.Contact
+import com.hasib.callerid.domian.model.Result
+import com.hasib.callerid.domian.repositories.BlockedNumberRepository
+import com.hasib.callerid.domian.repositories.ContactRepository
 import javax.inject.Inject
 
 class FetchContactsUseCase @Inject constructor(
@@ -12,13 +12,14 @@ class FetchContactsUseCase @Inject constructor(
     private val blockedNumberRepository: BlockedNumberRepository
 ) {
     suspend operator fun invoke(): Result<List<Contact>> {
+        return handleDataFetch { fetchContactList() }
+    }
+
+    private suspend fun fetchContactList(): List<Contact> {
         val contactsResult = contactsRepository.fetchContacts()
-        contactsResult.doOnSuccess {
-            it.forEach { contact ->
-                blockedNumberRepository.isBlocked(contact.phoneNumber).doOnSuccess { isBlocked ->
-                    contact.isBlocked = isBlocked
-                }
-            }
+        val blockedNumbers = blockedNumberRepository.fetchBlockedNumbers()
+        contactsResult.forEach { contact ->
+            contact.isBlocked = blockedNumbers.contains(contact.phoneNumber)
         }
 
         return contactsResult

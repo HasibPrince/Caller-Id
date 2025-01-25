@@ -1,6 +1,6 @@
-package com.hasib.callerid.data.repositories
+package com.hasib.callerid.domian.repositories
 
-import com.hasib.callerid.data.model.Contact
+import com.hasib.callerid.domian.model.Contact
 
 interface SpecialContactsRepository {
     suspend fun fetchSpecialContactByPhoneNumber(phoneNumber: String): Contact?

@@ -1,7 +1,7 @@
-package com.hasib.callerid.data
+package com.hasib.callerid.domian
 
+import com.hasib.callerid.domian.model.Result
 import kotlinx.coroutines.CancellationException
-import com.hasib.callerid.data.model.Result
 
 suspend fun <T> handleDataFetch(apiCall: suspend () -> T): Result<T> {
     return try {

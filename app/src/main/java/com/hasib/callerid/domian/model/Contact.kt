@@ -1,4 +1,4 @@
-package com.hasib.callerid.data.model
+package com.hasib.callerid.domian.model
 
 import java.util.UUID
 

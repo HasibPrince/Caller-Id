@@ -1,11 +1,11 @@
 package com.hasib.callerid.di
 
-import com.hasib.callerid.data.repositories.BlockedNumberRepository
 import com.hasib.callerid.data.repositories.BlockedNumberRepositoryImpl
-import com.hasib.callerid.data.repositories.ContactRepository
 import com.hasib.callerid.data.repositories.ContactRepositoryImpl
 import com.hasib.callerid.data.repositories.SpecialContactRepositoryImpl
-import com.hasib.callerid.data.repositories.SpecialContactsRepository
+import com.hasib.callerid.domian.repositories.BlockedNumberRepository
+import com.hasib.callerid.domian.repositories.ContactRepository
+import com.hasib.callerid.domian.repositories.SpecialContactsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
