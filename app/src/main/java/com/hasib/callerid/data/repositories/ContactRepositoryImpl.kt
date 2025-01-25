@@ -17,7 +17,6 @@ import javax.inject.Singleton
 class ContactRepositoryImpl @Inject constructor(@ApplicationContext private val context: Context) :
     ContactRepository {
     override suspend fun fetchContacts(): Result<List<Contact>> {
-        delay(3000)
         return getContacts(context.contentResolver)
     }
 

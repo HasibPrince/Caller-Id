@@ -1,5 +1,7 @@
 package com.hasib.callerid.di
 
+import com.hasib.callerid.data.repositories.BlockedNumberRepository
+import com.hasib.callerid.data.repositories.BlockedNumberRepositoryImpl
 import com.hasib.callerid.data.repositories.ContactRepository
 import com.hasib.callerid.data.repositories.ContactRepositoryImpl
 import com.hasib.callerid.data.repositories.SpecialContactRepositoryImpl
@@ -21,4 +23,8 @@ interface RepositoryModule {
     @Singleton
     @Binds
     fun getSpecialContactRepository(specialContactsRepository: SpecialContactRepositoryImpl): SpecialContactsRepository
+
+    @Singleton
+    @Binds
+    fun getBlockedNumberRepository(blockedNumberRepositoryImpl: BlockedNumberRepositoryImpl): BlockedNumberRepository
 }

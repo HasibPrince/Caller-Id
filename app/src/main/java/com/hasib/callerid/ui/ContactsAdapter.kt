@@ -1,6 +1,5 @@
 package com.hasib.callerid.ui
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,20 +8,25 @@ import android.widget.Filterable
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.hasib.callerid.data.model.Contact
-import com.hasib.callerid.R
+import com.hasib.callerid.databinding.ItemContactBinding
 
-class ContactsAdapter(private val contacts: List<Contact>) :
+class ContactsAdapter(
+    private val contacts: List<Contact>,
+    private val listener: ContactBlockListener
+) :
     RecyclerView.Adapter<ContactsAdapter.ContactViewHolder>(), Filterable {
 
     private var filteredContacts: List<Contact> = contacts
 
-    class ContactViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val nameTextView: TextView = itemView.findViewById(R.id.contactName)
-        val phoneTextView: TextView = itemView.findViewById(R.id.contactPhone)
+    class ContactViewHolder(binding: ItemContactBinding) : RecyclerView.ViewHolder(binding.root) {
+        val nameTextView: TextView = binding.contactName
+        val phoneTextView: TextView = binding.contactPhone
+        val blockButton: View = binding.blockButton
+        val blockText: TextView = binding.blockText
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_contact, parent, false)
+        val view = ItemContactBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ContactViewHolder(view)
     }
 
@@ -30,6 +34,17 @@ class ContactsAdapter(private val contacts: List<Contact>) :
         val contact = filteredContacts[position]
         holder.nameTextView.text = contact.name
         holder.phoneTextView.text = contact.phoneNumber
+        holder.blockText.text = if (contact.isBlocked) "Unblock" else "Block"
+        holder.blockButton.setOnClickListener {
+            listener.onBlockClicked(contact)
+        }
+    }
+
+    fun notifyItem(contact: Contact) {
+        val index = filteredContacts.indexOf(contact)
+        if (index != -1) {
+            notifyItemChanged(index)
+        }
     }
 
     override fun getItemCount(): Int = filteredContacts.size
@@ -57,5 +72,8 @@ class ContactsAdapter(private val contacts: List<Contact>) :
         }
     }
 
+    interface ContactBlockListener {
+        fun onBlockClicked(contact: Contact)
+    }
 
 }

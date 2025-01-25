@@ -21,6 +21,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hasib.callerid.R
 import com.hasib.callerid.data.model.Contact
@@ -29,11 +30,12 @@ import com.hasib.callerid.data.model.doOnLoading
 import com.hasib.callerid.data.model.doOnSuccess
 import com.hasib.callerid.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 private const val REQUEST_ID = 1;
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ContactsAdapter.ContactBlockListener {
 
 
     private lateinit var binding: ActivityMainBinding
@@ -84,9 +86,10 @@ class MainActivity : AppCompatActivity() {
         result.doOnLoading {
             binding.progressBar.visibility = View.VISIBLE
         }
-
-        result.doOnSuccess {
-            loadContactsAndDisplay(it)
+        lifecycleScope.launch {
+            result.doOnSuccess {
+                loadContactsAndDisplay(it)
+            }
         }
     }
 
@@ -106,7 +109,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadContactsAndDisplay(contacts: List<Contact>) {
         binding.progressBar.visibility = View.GONE
-        this.contactsAdapter = ContactsAdapter(contacts)
+        this.contactsAdapter = ContactsAdapter(contacts, this)
         binding.recyclerViewContacts.adapter = contactsAdapter
     }
 
@@ -176,5 +179,10 @@ class MainActivity : AppCompatActivity() {
                 Log.d("TAG", "onActivityResult: User denied the request.");
             }
         }
+    }
+
+    override fun onBlockClicked(contact: Contact) {
+        contactViewModel.blockNumber(contact)
+        contactsAdapter.notifyItem(contact)
     }
 }

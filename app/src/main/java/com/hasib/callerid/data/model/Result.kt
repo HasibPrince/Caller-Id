@@ -15,7 +15,7 @@ fun <T> Result<T>.doOnLoading(block: () -> Unit) {
     }
 }
 
-fun <T> Result<T>.doOnSuccess(block: (T) -> Unit) {
+suspend fun <T> Result<T>.doOnSuccess(block: suspend (T) -> Unit) {
     if (this is Success) {
         block(data)
     }
