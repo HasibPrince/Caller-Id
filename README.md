@@ -12,7 +12,6 @@ App Download link: https://drive.google.com/file/d/11bfLbO2rsEFkKBIN0XeqHsr6M4Qb
 
 ## Table of Contents
 
-- [Screenshots](#screenshots)
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
 - [Project Structure](#project-structure)  
@@ -23,8 +22,6 @@ App Download link: https://drive.google.com/file/d/11bfLbO2rsEFkKBIN0XeqHsr6M4Qb
 - [Contact](#contact)
 
 ---
-
-## 📸 Screenshots  
 
 
 ## Tech Stack
@@ -101,7 +98,7 @@ Or
 
 ## Testing
 - **Predefined numbers**
-Use these numbers to test predifined numbers behaviour
+Please use these numbers to test predefined numbers behavior
 
    Hasib: +8801722000674
   
