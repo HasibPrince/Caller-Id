@@ -32,8 +32,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-private const val REQUEST_ID = 1;
-
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), ContactsAdapter.ContactBlockListener {
 
@@ -61,11 +59,11 @@ class MainActivity : AppCompatActivity(), ContactsAdapter.ContactBlockListener {
 
         managePermissions()
 
-        intent.getStringExtra("message")?.let {
+        intent.getStringExtra(KEY_MESSAGE)?.let {
             AlertDialog.Builder(this)
-                .setTitle("Incoming Call")
+                .setTitle(getString(R.string.title_incoming_call))
                 .setMessage(it)
-                .setPositiveButton("OK") { dialog, _ ->
+                .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                     dialog.dismiss()
                 }
                 .show()
@@ -192,5 +190,10 @@ class MainActivity : AppCompatActivity(), ContactsAdapter.ContactBlockListener {
 
     override fun onBlockClicked(contact: Contact) {
         contactViewModel.blockNumber(contact)
+    }
+
+    companion object {
+        private const val REQUEST_ID = 1;
+        const val KEY_MESSAGE = "message"
     }
 }

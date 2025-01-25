@@ -17,8 +17,6 @@ abstract class CallerIdDatabase : RoomDatabase() {
         private var INSTANCE: CallerIdDatabase? = null
 
         fun getDatabase(context: Context): CallerIdDatabase {
-            // if the INSTANCE is not null, then return it,
-            // if it is, then create the database
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
@@ -26,7 +24,6 @@ abstract class CallerIdDatabase : RoomDatabase() {
                     DATABASE_NAME
                 ).build()
                 INSTANCE = instance
-                // return instance
                 instance
             }
         }

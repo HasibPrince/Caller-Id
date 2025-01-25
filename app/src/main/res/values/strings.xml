@@ -4,4 +4,5 @@
     <string name="message_incoming_call">Name: %1$s Phone Number: %2$s</string>
     <string name="title_incoming_call">Incoming Call</string>
     <string name="unblock">Unblock</string>
+    <string name="ok">OK</string>
 </resources>

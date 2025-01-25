@@ -5,8 +5,7 @@ import android.telecom.Call
 import android.telecom.CallScreeningService
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
-import android.util.Log
-import com.hasib.callerid.NotificationViewer
+import com.hasib.callerid.utils.NotificationViewer
 import com.hasib.callerid.R
 import com.hasib.callerid.domian.model.ValidationStatus
 import com.hasib.callerid.domian.usecases.ValidateCallUseCase
