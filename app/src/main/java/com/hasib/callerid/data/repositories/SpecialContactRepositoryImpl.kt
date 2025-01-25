@@ -8,7 +8,7 @@ import javax.inject.Singleton
 @Singleton
 class SpecialContactRepositoryImpl @Inject constructor() : SpecialContactsRepository {
     private val specialContacts = listOf(
-        Contact("Hasib", "12345"),
+        Contact("Hasib", "+8801722000674"),
         Contact("Afsar", "123456"),
         Contact("Sagar", "1234567"))
 
