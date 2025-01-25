@@ -64,6 +64,13 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.androidx.room.ktx)
     testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test.junit5)
+    testImplementation(libs.kotlin.test.common)
+    testImplementation(libs.androidx.core)
+    testImplementation(libs.mockito)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.androidx.core.testing)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

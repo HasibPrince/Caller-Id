@@ -14,6 +14,11 @@ hilt = "2.51.1"
 lifecycleRuntimeKtx = "2.8.7"
 room = "2.6.1"
 timber = "5.0.1"
+mockitoKotlin = "4.1.0"
+mockitoCore = "4.11.0"
+coroutinesTest = "1.10.1"
+core = "1.6.1"
+coreTesting = "2.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -32,6 +37,13 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+kotlin-test-common = { module = "org.jetbrains.kotlin:kotlin-test-common" }
+kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5" }
+mockito = { group = "org.mockito", name = "mockito-core", version.ref = "mockitoCore" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
+androidx-core = { module = "androidx.test:core", version.ref = "core" }
+androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
