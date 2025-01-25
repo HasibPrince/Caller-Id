@@ -4,4 +4,4 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class BlockedNumber(@PrimaryKey private val phoneNumber: String)
+data class BlockedNumber(@PrimaryKey val phoneNumber: String = "")
