@@ -83,7 +83,7 @@ class CallerIdScreeningService : CallScreeningService() {
         name: String,
         phoneNumber: String?
     ) {
-        respondCall(callDetails, true)
+        respondCall(callDetails, false)
         val message =
             getString(R.string.message_incoming_call, name, phoneNumber)
 
