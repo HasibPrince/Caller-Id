@@ -69,6 +69,10 @@ class MainActivity : AppCompatActivity(), ContactsAdapter.ContactBlockListener {
             handleResult(it)
         }
 
+        contactViewModel.blockContactsLiveData.observe(this) {
+            contactsAdapter.notifyItem(it)
+        }
+
         managePermissions()
 
         intent.getStringExtra("message")?.let {
@@ -183,6 +187,5 @@ class MainActivity : AppCompatActivity(), ContactsAdapter.ContactBlockListener {
 
     override fun onBlockClicked(contact: Contact) {
         contactViewModel.blockNumber(contact)
-        contactsAdapter.notifyItem(contact)
     }
 }

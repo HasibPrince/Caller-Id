@@ -9,14 +9,17 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class BlockedNumberRepositoryImpl @Inject constructor(private val blockedNumberDao: BlockedNumberDao) :
+class BlockedNumberRepositoryImpl @Inject constructor(
+    private val blockedNumberDao: BlockedNumberDao,
+    private val contactRepository: ContactRepository
+) :
     BlockedNumberRepository {
     override suspend fun insertBlockedNumber(phoneNumber: String) {
         blockedNumberDao.insert(BlockedNumber(phoneNumber))
     }
 
     override suspend fun isBlocked(phoneNumber: String): Result<Boolean> {
-       return handleDataFetch { blockedNumberDao.exists(phoneNumber) }
+        return handleDataFetch { blockedNumberDao.exists(phoneNumber) }
     }
 
     override suspend fun deleteBlockedNumber(phoneNumber: String) {
@@ -30,6 +33,7 @@ class BlockedNumberRepositoryImpl @Inject constructor(private val blockedNumberD
             } else {
                 insertBlockedNumber(phoneNumber)
             }
+            contactRepository.toggleBlockedNumber(phoneNumber)
         }
     }
 }

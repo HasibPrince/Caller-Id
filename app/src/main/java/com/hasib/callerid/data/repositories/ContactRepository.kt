@@ -5,4 +5,5 @@ import com.hasib.callerid.data.model.Result
 
 interface ContactRepository {
     suspend fun fetchContacts(): Result<List<Contact>>
+    fun toggleBlockedNumber(phoneNumber: String)
 }

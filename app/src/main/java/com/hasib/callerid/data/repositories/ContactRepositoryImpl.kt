@@ -6,6 +6,7 @@ import android.provider.ContactsContract
 import android.util.Log
 import com.hasib.callerid.data.model.Contact
 import com.hasib.callerid.data.model.Result
+import com.hasib.callerid.data.model.doOnSuccess
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -16,8 +17,21 @@ import javax.inject.Singleton
 @Singleton
 class ContactRepositoryImpl @Inject constructor(@ApplicationContext private val context: Context) :
     ContactRepository {
+
+        private val contactList = mutableListOf<Contact>()
+
     override suspend fun fetchContacts(): Result<List<Contact>> {
-        return getContacts(context.contentResolver)
+         getContacts(context.contentResolver).doOnSuccess {
+             contactList.clear()
+             contactList.addAll(it)
+         }
+        return Result.Success(contactList)
+    }
+
+    override fun toggleBlockedNumber(phoneNumber: String) {
+        contactList.filter { it.phoneNumber == phoneNumber }.forEach {
+            it.isBlocked = !it.isBlocked
+        }
     }
 
     private suspend fun getContacts(contentResolver: ContentResolver): Result<List<Contact>> {
@@ -53,7 +67,8 @@ class ContactRepositoryImpl @Inject constructor(@ApplicationContext private val 
             while (it.moveToNext()) {
                 val name = it.getString(nameIndex)
                 val phoneNumber = it.getString(numberIndex)
-                contacts.add(Contact(name, phoneNumber))
+                val contact = Contact(name, phoneNumber)
+                contacts.add(contact)
             }
         }
 

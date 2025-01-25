@@ -1,5 +1,6 @@
 package com.hasib.callerid.ui
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,9 +42,12 @@ class ContactsAdapter(
     }
 
     fun notifyItem(contact: Contact) {
-        val index = filteredContacts.indexOf(contact)
-        if (index != -1) {
-            notifyItemChanged(index)
+        filteredContacts.filter { it.phoneNumber == contact.phoneNumber }.forEach {
+            val index = filteredContacts.indexOf(it)
+            Log.d("TAG", "Index: $index Item changed: $it")
+            if (index != -1) {
+                notifyItemChanged(index)
+            }
         }
     }
 

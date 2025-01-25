@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Caller Id</string>
     <string name="block">Block</string>
+    <string name="message_incoming_call">Name: %1$s Phone Number: %2$s</string>
 </resources>

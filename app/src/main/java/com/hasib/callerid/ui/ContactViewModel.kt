@@ -1,5 +1,6 @@
 package com.hasib.callerid.ui
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,7 +19,10 @@ class ContactViewModel @Inject constructor(
     private val blockedNumberRepository: BlockedNumberRepository
 ) : ViewModel() {
     private val _contactsLiveData = MutableLiveData<Result<List<Contact>>>()
-    val contactsLiveData: MutableLiveData<Result<List<Contact>>> = _contactsLiveData
+    val contactsLiveData: LiveData<Result<List<Contact>>> = _contactsLiveData
+
+    private val _blockContactsLiveData = MutableLiveData<Contact>()
+    val blockContactsLiveData: LiveData<Contact> = _blockContactsLiveData
 
     fun fetchContacts() {
         _contactsLiveData.value = Result.Loading
@@ -31,7 +35,7 @@ class ContactViewModel @Inject constructor(
     fun blockNumber(contact: Contact) {
         viewModelScope.launch {
             blockedNumberRepository.toggleBlockedNumber(contact.phoneNumber)
-            contact.isBlocked = !contact.isBlocked
+            _blockContactsLiveData.value = contact
         }
     }
 }

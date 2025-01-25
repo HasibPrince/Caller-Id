@@ -7,6 +7,9 @@ import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
 import com.hasib.callerid.NotificationViewer
+import com.hasib.callerid.R
+import com.hasib.callerid.data.model.Result
+import com.hasib.callerid.data.repositories.BlockedNumberRepository
 import com.hasib.callerid.data.repositories.SpecialContactsRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -24,6 +27,9 @@ class CallerIdScreeningService : CallScreeningService() {
     @Inject
     lateinit var specialContactsRepository: SpecialContactsRepository
 
+    @Inject
+    lateinit var blockedNumberRepository: BlockedNumberRepository
+
     override fun onCreate() {
         super.onCreate()
         telephonyManager = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
@@ -38,7 +44,7 @@ class CallerIdScreeningService : CallScreeningService() {
             Log.d("CallerIdScreeningService", "Incoming call from: $phoneNumber")
             val isIncoming = callDetails.callDirection == Call.Details.DIRECTION_INCOMING
             if (isIncoming) {
-                responseCall(callDetails)
+                validateCall(callDetails)
             }
         }else {
             checkCallStatus(callDetails)
@@ -51,32 +57,44 @@ class CallerIdScreeningService : CallScreeningService() {
                 super.onCallStateChanged(state, phoneNumber)
                 if (state == TelephonyManager.CALL_STATE_RINGING) {
                     Log.d("CallerIdScreeningService", "Incoming call from: $phoneNumber")
-                    responseCall(callDetails)
+                    validateCall(callDetails)
                 }
             }
         }, PhoneStateListener.LISTEN_CALL_STATE)
     }
 
-    private fun responseCall(callDetails: Call.Details) {
+    private fun validateCall(callDetails: Call.Details) {
         coroutineScope.launch {
             val phoneNumber = callDetails.handle.schemeSpecificPart
+
+            val result = blockedNumberRepository.isBlocked(phoneNumber)
+            if (result is Result.Success) {
+                if (result.data) {
+                    Log.d("CallerIdScreeningService", "Blocked call from: $phoneNumber")
+                    respondCall(callDetails, true)
+                    return@launch
+                }
+            }
+
             val specialContact = specialContactsRepository.fetchSpecialContactByPhoneNumber(phoneNumber)
             if (specialContact != null) {
-                val response = CallResponse.Builder()
-                    .setDisallowCall(true)
-                    .build()
-                respondToCall(callDetails, response)
-                val message = "Name: ${specialContact.name} Phone Number: $phoneNumber"
+                respondCall(callDetails, true)
+                val message =
+                    getString(R.string.message_incoming_call, specialContact.name, phoneNumber)
                 NotificationViewer.showNotification(this@CallerIdScreeningService, "Incoming Call", message)
             } else {
-                val response = CallResponse.Builder()
-                    .setDisallowCall(false)
-                    .build()
-                respondToCall(callDetails, response)
+                respondCall(callDetails, false)
             }
 
         }
 
+    }
+
+    private fun respondCall(callDetails: Call.Details, isDisallowCall: Boolean) {
+        val response = CallResponse.Builder()
+            .setDisallowCall(isDisallowCall)
+            .build()
+        respondToCall(callDetails, response)
     }
 }
 
