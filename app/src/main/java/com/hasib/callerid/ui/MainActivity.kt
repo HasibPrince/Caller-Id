@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity(), ContactsAdapter.ContactBlockListener {
             contactViewModel.fetchContacts()
         } else {
             ActivityCompat.requestPermissions(
-                this, permissions, 100
+                this, permissions, REQUEST_PERMISSIONS_CODE
             )
         }
 
@@ -163,7 +163,7 @@ class MainActivity : AppCompatActivity(), ContactsAdapter.ContactBlockListener {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 100 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == REQUEST_PERMISSIONS_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             contactViewModel.fetchContacts()
         }
     }
@@ -203,6 +203,7 @@ class MainActivity : AppCompatActivity(), ContactsAdapter.ContactBlockListener {
 
     companion object {
         private const val REQUEST_ID = 1;
+        const val REQUEST_PERMISSIONS_CODE = 100
         const val KEY_MESSAGE = "message"
     }
 }
