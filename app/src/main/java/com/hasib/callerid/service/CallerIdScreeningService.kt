@@ -5,10 +5,10 @@ import android.telecom.Call
 import android.telecom.CallScreeningService
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
-import com.hasib.callerid.utils.NotificationViewer
 import com.hasib.callerid.R
 import com.hasib.callerid.domian.model.ValidationStatus
 import com.hasib.callerid.domian.usecases.ValidateCallUseCase
+import com.hasib.callerid.utils.NotificationViewer
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,15 +21,12 @@ import javax.inject.Inject
 class CallerIdScreeningService : CallScreeningService() {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
-    private lateinit var telephonyManager: TelephonyManager
+
+    @Inject
+    lateinit var telephonyManager: TelephonyManager
 
     @Inject
     lateinit var validationUseCase: ValidateCallUseCase
-
-    override fun onCreate() {
-        super.onCreate()
-        telephonyManager = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
-    }
 
     override fun onScreenCall(callDetails: Call.Details) {
         val phoneNumber = callDetails.handle.schemeSpecificPart
